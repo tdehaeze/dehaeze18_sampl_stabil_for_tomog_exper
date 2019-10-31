@@ -42,6 +42,9 @@ All the figures for the paper have been generated using [[https://sourceforge.ne
 :END:
 The poster has been created using the [[https://www.ctan.org/pkg/tikzposter][tikzposter]] package for [[https://sourceforge.net/projects/latex-beamer/][beamer]].
 
+* Talk ([[file:talk/talk.pdf][link]])
+This work has been presented at [[https://indico.cern.ch/event/680538/][MEDSI 2018]].
+
 * How to cite this paper
 :PROPERTIES:
 :UNNUMBERED: t
