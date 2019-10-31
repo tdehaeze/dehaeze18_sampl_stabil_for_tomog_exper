@@ -1,0 +1,75 @@
+#+TITLE: Sample Stabilization for Tomography Experiments in Presence of Large Plant Uncertainty
+:DRAWER:
+#+SUBTITLE: Dehaeze Thomas, Magnin-Mattenet Muriel and Collette Christophe
+#+OPTIONS: toc:nil
+#+OPTIONS: html-postamble:nil
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/htmlize.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/readtheorg.css"/>
+#+HTML_HEAD: <script src="js/jquery.min.js"></script>
+#+HTML_HEAD: <script src="js/bootstrap.min.js"></script>
+#+HTML_HEAD: <script src="js/jquery.stickytableheaders.min.js"></script>
+#+HTML_HEAD: <script src="js/readtheorg.js"></script>
+:END:
+
+#+begin_quote
+  *Abstract*:
+
+  A new low emittance lattice storage ring is under construction at the ESRF.
+  In this new instrument, an upgraded end station for ID31 beamline must allow to position the samples along complex trajectories with a nanometer precision.
+  In order to reach these requirements, samples have to be mounted on high precision stages, combining a capability of large stroke, spin motion, and active rejection of disturbances.
+  First, the end station will be presented with the associated requirements. However, the precision is limited by thermal expansion and various imperfections that are not actively compensated.
+  Our approach is to add a Nano Active Stabilization System (NASS) which is composed of a 6DoF Stewart platform and a 6 DoF metrology system.
+  A 3D model of the end station updated with experimental data is developed.
+  As the mass of the samples may vary by up to two orders of magnitudes, robust control strategies are required to address such plant uncertainty.
+  The proposed control strategy are presented and applied on the developed model by conducting time domain simulations of tomography experiment in presence of instrumentation noise and system uncertainty.
+#+end_quote
+
+* Paper ([[file:paper/paper.pdf][link]])
+:PROPERTIES:
+:UNNUMBERED: t
+:END:
+The paper has been created [[https://orgmode.org/][Org Mode]] (generating [[https://www.latex-project.org/][LaTeX]] code) under [[https://www.gnu.org/software/emacs/][Emacs]].
+
+* Tikz Figures ([[file:tikz/index.org][link]])
+:PROPERTIES:
+:UNNUMBERED: t
+:END:
+All the figures for the paper have been generated using [[https://sourceforge.net/projects/pgf/][TikZ]].
+
+* Poster ([[file:poster/poster.pdf][link]])
+:PROPERTIES:
+:UNNUMBERED: t
+:END:
+The poster has been created using the [[https://www.ctan.org/pkg/tikzposter][tikzposter]] package for [[https://sourceforge.net/projects/latex-beamer/][beamer]].
+
+* How to cite this paper
+:PROPERTIES:
+:UNNUMBERED: t
+:END:
+To cite this paper use the following bibtex code.
+#+begin_src bibtex
+  @inproceedings{dehaeze18_sampl_stabil_for_tomog_exper,
+    author =       {Thomas Dehaeze and M. Magnin Mattenet and Christophe Collette},
+    title =        {Sample Stabilization For Tomography Experiments In Presence Of
+                    Large Plant Uncertainty},
+    booktitle =    {MEDSI'18},
+    year =         2018,
+    number =       10,
+    pages =        {153--157},
+    doi =          {10.18429/JACoW-MEDSI2018-WEOAMA02},
+    url =          {https://doi.org/10.18429/JACoW-MEDSI2018-WEOAMA02},
+    address =      {Geneva, Switzerland},
+    isbn =         {978-3-95450-207-3},
+    language =     {english},
+    month =        {Dec},
+    publisher =    {JACoW Publishing},
+    series =       {Mechanical Engineering Design of Synchrotron Radiation
+                    Equipment and Instrumentation},
+    venue =        {Paris, France},
+  }
+#+end_src
+
+You can also use the formatted citation below.
+#+begin_quote
+  Dehaeze, T., Mattenet, M. M., & Collette, C., Sample Stabilization For Tomography Experiments In Presence Of Large Plant Uncertainty, In MEDSI'18 (pp. 153–157) (2018). Geneva, Switzerland
+#+end_quote

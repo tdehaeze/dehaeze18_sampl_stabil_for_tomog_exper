@@ -1,0 +1,52 @@
+\documentclass[%
+    a0paper,%
+    20pt,%
+    portait,%
+    margin=0mm,%
+    innermargin=10mm,%
+    blockverticalspace=10mm,%
+    colspace=10mm,%
+    subcolspace=5mm%
+]{tikzposter}
+
+\input{config.tex}
+
+\addbibresource{ref.bib}
+
+\author{T. Dehaeze, M. Magnin-Mattenet, C. Collette}
+\date{2018-09-06}
+\title{Sample Stabilization for Tomography Experiments in Presence of Large Plant Uncertainty}
+\institute{}
+
+\useblockstyle{customstyle}
+
+\begin{document}
+
+\maketitle[%
+    roundedcorners=2,
+    linewidth=2mm,
+    innersep=10mm,
+    titletotopverticalspace=10mm,
+    titletoblockverticalspace=10mm]
+
+\block[]{}{\input{abstract.tex}}
+
+\begin{columns}
+\column{0.5}
+\block[]{Introduction}{\input{introduction.tex}}
+\block[]{ID31 Sample Station}{\input{id31samplestation.tex}}
+
+\column{0.5}
+\block[]{Nano Active Stabilization System}{\input{nass.tex}}
+\block[]{Results}{\input{results.tex}}
+\block[]{Conclusion}{\input{conclusion.tex}}
+\end{columns}
+
+\block[]{}{\input{reference.tex}}
+% \block[]{}{\input{acknoledgment.tex}}
+
+\end{document}
+\section{ACKNOWLEDGMENTS}
+\label{sec:org59f58a9}
+This research was made possible by a grant from the ESRF.
+We thank the following people for their support, without whose help this work would never have been possible: V. Honkimaki, A. Jublan, L. Ducotte, C. Carole, M. Brendike and M. Lessourd and the whole team of the Precision Mechatronic Laboratory.

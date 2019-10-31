@@ -1,0 +1,29 @@
+\begin{tikzpicture}
+  % Blocs
+  \node[block={2.5cm}{2cm}] (P) {P};
+  \node[block={2.5cm}{2cm}, below=1 of P, scale=0.6] (K) {\[%
+      \begin{pmatrix}
+        K_{T_x} & 0      & \cdots & 0            \\
+        0       & \ddots & \ddots & \vdots       \\
+        \vdots  & \ddots & \ddots & 0            \\
+        0       & \cdots & 0      & K_{\theta_z} \\
+      \end{pmatrix}
+    \]};
+
+  % Block names
+  \node[above] at (P.north) {End Station};
+  \node[above] at (K.north) {Controller};
+
+  % Input and outputs coordinates
+  \coordinate[] (inputw)  at ($(P.south west)!0.75!(P.north west)$);
+  \coordinate[] (inputu)  at ($(P.south west)!0.25!(P.north west)$);
+  \coordinate[] (outputz) at ($(P.south east)!0.75!(P.north east)$);
+  \coordinate[] (outputv) at ($(P.south east)!0.25!(P.north east)$);
+
+  % Connections and labels
+  \draw[<-] (inputw) node[above left]{$w$} -- ++(-0.8, 0);
+  \draw[<-] (inputu) node[above left]{$F$} -- ++(-0.8, 0) |- (K.west);
+
+  \draw[->] (outputz) node[above right]{$z$} -- ++(0.8, 0);
+  \draw[->] (outputv) node[above right]{$d$} -- ++(0.8, 0) |- (K.east);
+\end{tikzpicture}

@@ -1,0 +1,132 @@
+\begin{tikzpicture}
+  % Parameters
+  \def\blockw{6.0cm}
+  \def\blockh{1.2cm}
+
+  \def\tiltdeg{3}
+  \coordinate[] (rotationpoint) at (0, 4.5*\blockh);
+
+  \begin{scope}[rotate around={\tiltdeg:(rotationpoint)}]
+    % Tilt
+    \path[] ([shift=(-120:4*\blockh)]rotationpoint) coordinate(beginarc) arc (-120:-110:4*\blockh) %
+    -- ([shift=(-70:4*\blockh)]rotationpoint) arc (-70:-60:4*\blockh)%
+    |- ++(-0.15*\blockw, 0.6*\blockh) coordinate (spindlene)%
+    |- ($(beginarc) + (0.15*\blockw, 0.2*\blockh)$) coordinate (spindlesw) -- ++(0, 0.4*\blockh) coordinate(tiltte) -| cycle;
+
+    % Spindle
+    \coordinate[] (spindlese) at (spindlesw-|spindlene);
+    \draw[fill=black!30] ($(spindlese)+(-0.1,0.1)+(-0.1*\blockw, 0)$) -| ($(spindlene)+(-0.1, 0)$) -| coordinate[pos=0.25](spindletop) ($(spindlesw)+(0.1,0.1)$) -| ++(0.1*\blockw, -\blockh) -| coordinate[pos=0.25](spindlebot) cycle;
+
+    % \draw[dashed, color=black!60] ($(spindletop)+(0, 0.2)$) -- ($(spindlebot)+(0,-0.2)$);
+
+    % Tilt
+    \draw[fill=black!60] ([shift=(-120:4*\blockh)]rotationpoint) coordinate(beginarc) arc (-120:-110:4*\blockh) %
+    -- ([shift=(-70:4*\blockh)]rotationpoint) arc (-70:-60:4*\blockh)%
+    |- coordinate (tiltne) ++(-0.15*\blockw, 0.6*\blockh) coordinate (spindlene)%
+    |- ($(beginarc) + (0.15*\blockw, 0.2*\blockh)$) coordinate (spindlesw) -- ++(0, 0.4*\blockh) -| cycle;
+
+    % Micro-Hexapod
+    \begin{scope}[shift={(spindletop)}]
+      % Parameters definitions
+      \def\baseh{0.22*\blockh} % Height of the base
+      \def\naceh{0.18*\blockh} % Height of the nacelle
+      \def\baser{0.22*\blockw} % Radius of the base
+      \def\nacer{0.18*\blockw} % Radius of the nacelle
+
+      \def\armr{0.2*\blockh} % Radius of the arms
+      \def\basearmborder{0.2}
+      \def\nacearmborder{0.2}
+
+      \def\xnace{0} \def\ynace{\blockh-\naceh} \def\anace{0}
+      \def\xbase{0} \def\ybase{0} \def\abase{0}
+
+      % Hexapod1
+      \begin{scope}[shift={(\xbase, \ybase)}, rotate=\abase]
+        % Base
+        \draw[fill=white] (-\baser, 0) coordinate[](uhexabot) rectangle (\baser, \baseh);
+
+        \coordinate[] (armbasel) at (-\baser+\basearmborder+\armr, \baseh);
+        \coordinate[] (armbasec) at (0, \baseh);
+        \coordinate[] (armbaser) at (\baser-\basearmborder-\armr, \baseh);
+
+        \begin{scope}[shift={(\xnace, \ynace)}, rotate=\anace]
+          \draw[fill=white] (-\nacer, 0) rectangle (\nacer, \naceh);
+          \coordinate[] (uhexatop) at (0, \naceh);
+          \coordinate[] (armnacel) at (-\nacer+\nacearmborder+\armr, 0);
+          \coordinate[] (armnacec) at (0, 0);
+          \coordinate[] (armnacer) at (\nacer-\nacearmborder-\armr, 0);
+        \end{scope}
+
+        \draw[] (armbasec) -- (armnacer);
+        \draw[] (armbasec) -- (armnacel);
+        \draw[] (armbasel) -- coordinate(mhexaw) (armnacel);
+        \draw[] (armbasel) -- (armnacec);
+        \draw[] (armbaser) -- (armnacec);
+        \draw[] (armbaser) -- coordinate(mhexae) (armnacer);
+      \end{scope}
+    \end{scope}
+
+    % Sample
+    \begin{scope}[shift={(uhexatop)}]
+      \draw[fill=white] (-0.1*\blockw, 0) coordinate[](samplebot) rectangle coordinate[pos=0.5](samplecenter) node[pos=0.5, above]{Sample} (0.1*\blockw, \blockh) coordinate[](samplene);
+      \coordinate[](samplenw) at (-0.1*\blockw, \blockh);
+    \end{scope}
+  \end{scope}
+
+  \begin{scope}[shift={(0, -0.3*\blockh)}]
+    % Translation Stage - fixed part
+    \draw[fill=black!40] (-0.5*\blockw, 0) coordinate[](tyb) rectangle (0.5*\blockw, 0.15*\blockh);
+    \coordinate[] (measposbot) at (0.5*\blockw, 0);
+
+    % Translation Stage - mobile part
+    \draw[fill=black!10, fill opacity=0.5] (-0.5*\blockw, 0.2*\blockh) -- (-0.5*\blockw, 1.5*\blockh) coordinate[](tyt) -- (0.5*\blockw, 1.5*\blockh) -- (0.5*\blockw, 0.2*\blockh) -- (0.35*\blockw, 0.2*\blockh) -- (0.35*\blockw, 0.8*\blockh) -- (-0.35*\blockw, 0.8*\blockh) -- (-0.35*\blockw, 0.2*\blockh) -- cycle;
+
+    % Translation Guidance
+    \draw[dashed, color=black!60] ($(-0.5*\blockw, 0)+( 0.075*\blockw,0.5*\blockh)$) circle (0.2*\blockh);
+    \draw[dashed, color=black!60] ($( 0.5*\blockw, 0)+(-0.075*\blockw,0.5*\blockh)$) circle (0.2*\blockh);
+
+    % Tilt Guidance
+    \draw[dashed, color=black!60] ([shift=(-107:4.1*\blockh)]rotationpoint) arc (-107:-120:4.1*\blockh);
+    \draw[dashed, color=black!60] ([shift=( -73:4.1*\blockh)]rotationpoint) arc (-73:-60:4.1*\blockh);
+  \end{scope}
+
+  % % Vertical line
+  % \draw[dashed, color=black] (samplecenter) -- ++(0, -4*\blockh);
+  % \begin{scope}[rotate around={\tiltdeg:(samplecenter)}]
+  %   \draw[dashed, color=black] (samplecenter) -- ++(0, -4*\blockh);
+  %   \node[] at ($(samplecenter)+(0, -2.3*\blockh)$) {\AxisRotator[rotate=-90]};
+  %   \node[right, shift={(0.3,0)}] at ($(samplecenter)+(0, -2.3*\blockh)$) {$\theta_z$};
+  % \end{scope}
+  % \draw[->] ([shift=(-90:3.6*\blockh)]samplecenter) arc (-90:-87:3.6*\blockh) node[right]{$\theta_y$};
+
+  % Laser
+  \begin{scope}[shift={(samplecenter)}]
+    \draw[color=red, -<-=0.3] (samplecenter) node[circle, fill=red, inner sep=0pt, minimum size=3pt]{} -- node[pos=0.3, above, color=black]{X-ray} ($(samplecenter)+(1.2*\blockw,0)$);
+  \end{scope}
+
+  % Axis
+  \begin{scope}[shift={(-0.35*\blockw, 3*\blockh)}]
+    \def\axissize{0.8cm}
+    \draw[->] (0, 0) -- ++(0, \axissize) node[right]{$z$};
+    \draw[->] (0, 0) -- ++(-\axissize, 0) node[above]{$x$};
+    \draw[fill, color=black] (0, 0) circle (0.05*\axissize);
+    \node[draw, circle, inner sep=0pt, minimum size=0.4*\axissize, label=right:$y$] (yaxis) at (0, 0){};
+    % \node[draw, circle, inner sep=0pt, cross, minimum size=0.4*\axissize, label=left:$y$] (yaxis) at (0, 0){};
+  \end{scope}
+
+  \node[fit={($(-0.6*\blockw, -0.5*\blockh)$) ($(0.6*\blockw, 4*\blockh)$)}, inner sep=0pt, draw, dashed, color=gray, label={Positioning Station}] (possystem) {};
+
+  \draw[fill=black!30] ($(tyb)+(-5, -1)$) coordinate[](granitesw) rectangle node[pos=0.5]{Granite Frame} ($(measposbot)+(5, 0)$) coordinate[](granitene);
+
+  % Focusing Optics
+  \draw[fill=black!20] ($(granitene)+(-1.5, 3)$) rectangle ++(-1, 2);
+  \draw[spring] ($(granitene)+(-2, 0)$) -- ++(0, 3);
+
+  \node[fit={($(granitene)+(-2.8, -0.2)$) ($(granitene)+(-1.2, 5.2)$)}, inner sep=0pt, draw, dashed, color=gray, label={Focusing Optics}] () {};
+
+  % Measurement Optics
+  \draw[fill=black!20] ($(granitesw)+(1.5, 4)$) rectangle ++(1, 2);
+  \draw[spring] ($(granitesw)+(2, 1)$) -- ++(0, 3);
+
+  \node[fit={($(granitesw)+(2.8, 0.8)$) ($(granitesw)+(1.2, 6.2)$)}, inner sep=0pt, draw, dashed, color=gray, label={Imagery System}] () {};
+\end{tikzpicture}

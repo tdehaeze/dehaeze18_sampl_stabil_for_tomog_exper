@@ -1,0 +1,1059 @@
+#+TITLE: Sample Stabilization for Tomography Experiments in Presence of Large Plant Uncertainty - Tikz Figures
+:DRAWER:
+#+HTML_LINK_HOME: ../index.html
+#+HTML_LINK_UP: ../index.html
+
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/htmlize.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/readtheorg.css"/>
+#+HTML_HEAD: <script src="../js/jquery.min.js"></script>
+#+HTML_HEAD: <script src="../js/bootstrap.min.js"></script>
+#+HTML_HEAD: <script src="../js/jquery.stickytableheaders.min.js"></script>
+#+HTML_HEAD: <script src="../js/readtheorg.js"></script>
+
+#+PROPERTY: header-args:latex  :headers '("\\usepackage{tikz}" "\\usepackage{import}" "\\import{/home/thomas/Cloud/thesis/papers/dehaeze18_sampl_stabil_for_tomog_exper/tikz/}{config.tex}")
+#+PROPERTY: header-args:latex+ :imagemagick t :fit yes
+#+PROPERTY: header-args:latex+ :iminoptions -scale 100% -density 150
+#+PROPERTY: header-args:latex+ :imoutoptions -quality 100
+#+PROPERTY: header-args:latex+ :results raw replace :buffer no
+#+PROPERTY: header-args:latex+ :eval no-export
+#+PROPERTY: header-args:latex+ :exports both
+#+PROPERTY: header-args:latex+ :mkdirp yes
+#+PROPERTY: header-args:latex+ :noweb yes
+#+PROPERTY: header-args:latex+ :output-dir figs
+#+PROPERTY: header-args:latex+ :post pdf2svg(file=*this*, ext="png")
+:END:
+
+Configuration file is accessible [[file:config.org][here]].
+
+* Fig 1: Schematic representation of the ID31 end station
+#+begin_src latex :file schematic_sys_without_nass.pdf :tangle figs/schematic_sys_without_nass.tex :exports results
+  \begin{tikzpicture}
+    % Parameters
+    \def\blockw{6.0cm}
+    \def\blockh{1.2cm}
+
+    \def\tiltdeg{3}
+    \coordinate[] (rotationpoint) at (0, 4.5*\blockh);
+
+    \begin{scope}[rotate around={\tiltdeg:(rotationpoint)}]
+      % Tilt
+      \path[] ([shift=(-120:4*\blockh)]rotationpoint) coordinate(beginarc) arc (-120:-110:4*\blockh) %
+      -- ([shift=(-70:4*\blockh)]rotationpoint) arc (-70:-60:4*\blockh)%
+      |- ++(-0.15*\blockw, 0.6*\blockh) coordinate (spindlene)%
+      |- ($(beginarc) + (0.15*\blockw, 0.2*\blockh)$) coordinate (spindlesw) -- ++(0, 0.4*\blockh) coordinate(tiltte) -| cycle;
+
+      % Spindle
+      \coordinate[] (spindlese) at (spindlesw-|spindlene);
+      \draw[fill=black!30] ($(spindlese)+(-0.1,0.1)+(-0.1*\blockw, 0)$) -| ($(spindlene)+(-0.1, 0)$) -| coordinate[pos=0.25](spindletop) ($(spindlesw)+(0.1,0.1)$) -| ++(0.1*\blockw, -\blockh) -| coordinate[pos=0.25](spindlebot) cycle;
+
+      % \draw[dashed, color=black!60] ($(spindletop)+(0, 0.2)$) -- ($(spindlebot)+(0,-0.2)$);
+
+      % Tilt
+      \draw[fill=black!60] ([shift=(-120:4*\blockh)]rotationpoint) coordinate(beginarc) arc (-120:-110:4*\blockh) %
+      -- ([shift=(-70:4*\blockh)]rotationpoint) arc (-70:-60:4*\blockh)%
+      |- coordinate (tiltne) ++(-0.15*\blockw, 0.6*\blockh) coordinate (spindlene)%
+      |- ($(beginarc) + (0.15*\blockw, 0.2*\blockh)$) coordinate (spindlesw) -- ++(0, 0.4*\blockh) -| cycle;
+
+      % Micro-Hexapod
+      \begin{scope}[shift={(spindletop)}]
+        % Parameters definitions
+        \def\baseh{0.22*\blockh} % Height of the base
+        \def\naceh{0.18*\blockh} % Height of the nacelle
+        \def\baser{0.22*\blockw} % Radius of the base
+        \def\nacer{0.18*\blockw} % Radius of the nacelle
+
+        \def\armr{0.2*\blockh} % Radius of the arms
+        \def\basearmborder{0.2}
+        \def\nacearmborder{0.2}
+
+        \def\xnace{0} \def\ynace{\blockh-\naceh} \def\anace{0}
+        \def\xbase{0} \def\ybase{0} \def\abase{0}
+
+        % Hexapod1
+        \begin{scope}[shift={(\xbase, \ybase)}, rotate=\abase]
+          % Base
+          \draw[fill=white] (-\baser, 0) coordinate[](uhexabot) rectangle (\baser, \baseh);
+
+          \coordinate[] (armbasel) at (-\baser+\basearmborder+\armr, \baseh);
+          \coordinate[] (armbasec) at (0, \baseh);
+          \coordinate[] (armbaser) at (\baser-\basearmborder-\armr, \baseh);
+
+          \begin{scope}[shift={(\xnace, \ynace)}, rotate=\anace]
+            \draw[fill=white] (-\nacer, 0) rectangle (\nacer, \naceh);
+            \coordinate[] (uhexatop) at (0, \naceh);
+            \coordinate[] (armnacel) at (-\nacer+\nacearmborder+\armr, 0);
+            \coordinate[] (armnacec) at (0, 0);
+            \coordinate[] (armnacer) at (\nacer-\nacearmborder-\armr, 0);
+          \end{scope}
+
+          \draw[] (armbasec) -- (armnacer);
+          \draw[] (armbasec) -- (armnacel);
+          \draw[] (armbasel) -- coordinate(mhexaw) (armnacel);
+          \draw[] (armbasel) -- (armnacec);
+          \draw[] (armbaser) -- (armnacec);
+          \draw[] (armbaser) -- coordinate(mhexae) (armnacer);
+        \end{scope}
+      \end{scope}
+
+      % Sample
+      \begin{scope}[shift={(uhexatop)}]
+        \draw[fill=white] (-0.1*\blockw, 0) coordinate[](samplebot) rectangle coordinate[pos=0.5](samplecenter) (0.1*\blockw, \blockh) coordinate[](samplene);
+        \coordinate[](samplenw) at (-0.1*\blockw, \blockh);
+      \end{scope}
+    \end{scope}
+
+    \begin{scope}[shift={(0, -0.3*\blockh)}]
+      % Translation Stage - fixed part
+      \draw[fill=black!40] (-0.5*\blockw, 0) coordinate[](tyb) rectangle (0.5*\blockw, 0.15*\blockh);
+      \coordinate[] (measposbot) at (0.5*\blockw, 0);
+
+      % Translation Stage - mobile part
+      \draw[fill=black!10, fill opacity=0.5] (-0.5*\blockw, 0.2*\blockh) -- (-0.5*\blockw, 1.5*\blockh) coordinate[](tyt) -- (0.5*\blockw, 1.5*\blockh) -- (0.5*\blockw, 0.2*\blockh) -- (0.35*\blockw, 0.2*\blockh) -- (0.35*\blockw, 0.8*\blockh) -- (-0.35*\blockw, 0.8*\blockh) -- (-0.35*\blockw, 0.2*\blockh) -- cycle;
+
+      % Translation Guidance
+      \draw[dashed, color=black!60] ($(-0.5*\blockw, 0)+( 0.075*\blockw,0.5*\blockh)$) circle (0.2*\blockh);
+      \draw[dashed, color=black!60] ($( 0.5*\blockw, 0)+(-0.075*\blockw,0.5*\blockh)$) circle (0.2*\blockh);
+
+      \draw[fill, color=black] ($( 0.5*\blockw, 0)+(-0.075*\blockw,1.0*\blockh)$) circle (0.04);
+      \node[draw, circle, inner sep=0pt, minimum size=0.3cm, label=left:$T_y$] at ($( 0.5*\blockw, 0)+(-0.075*\blockw,1.0*\blockh)$){};
+
+      % Tilt Guidance
+      \draw[dashed, color=black!60] ([shift=(-107:4.1*\blockh)]rotationpoint) arc (-107:-120:4.1*\blockh);
+      \draw[dashed, color=black!60] ([shift=( -73:4.1*\blockh)]rotationpoint) arc (-73:-60:4.1*\blockh);
+    \end{scope}
+
+    % Vertical line
+    \draw[dashed, color=black] (samplecenter) -- ++(0, -4*\blockh);
+    \begin{scope}[rotate around={\tiltdeg:(samplecenter)}]
+      \draw[dashed, color=black] (samplecenter) -- ++(0, -4*\blockh);
+      \node[] at ($(samplecenter)+(0, -2.3*\blockh)$) {\AxisRotator[rotate=-90]};
+      \node[right, shift={(0.3,0)}] at ($(samplecenter)+(0, -2.3*\blockh)$) {$\theta_z$};
+    \end{scope}
+    \draw[->] ([shift=(-90:3.6*\blockh)]samplecenter) arc (-90:-87:3.6*\blockh) node[right]{$\theta_y$};
+
+    % Laser
+    \begin{scope}[shift={(samplecenter)}]
+      \draw[color=red, -<-=0.5] (samplecenter) node[circle, fill=red, inner sep=0pt, minimum size=3pt]{} -- node[midway, above, color=black]{X-ray} ($(samplecenter)+(0.5*\blockw,0)$);
+      % \draw[color=red, -<-=0.5] (samplecenter) node[circle, fill=red, inner sep=0pt, minimum size=3pt]{} -- ($(samplecenter)+(0.5*\blockw,0)$);
+    \end{scope}
+
+    % Axis
+    \begin{scope}[shift={(-0.35*\blockw, 3*\blockh)}]
+      \def\axissize{0.8cm}
+      \draw[->] (0, 0) -- ++(0, \axissize) node[right]{$z$};
+      \draw[->] (0, 0) -- ++(-\axissize, 0) node[above]{$x$};
+      \draw[fill, color=black] (0, 0) circle (0.05*\axissize);
+      \node[draw, circle, inner sep=0pt, minimum size=0.4*\axissize, label=right:$y$] (yaxis) at (0, 0){};
+      % \node[draw, circle, inner sep=0pt, cross, minimum size=0.4*\axissize, label=left:$y$] (yaxis) at (0, 0){};
+    \end{scope}
+
+    % NUMBERS
+
+    % Granite
+    \node[labelc, anchor=west] (char) at (tyb) {1};
+    % Translation stage
+    \node[labelc, anchor=north west] (char) at (tyt) {2};
+    % Tilt Stage
+    \node[labelc, anchor=north east] (char) at (tiltne) {3};
+    % Spindle
+    \node[labelc, anchor=north east] (char) at (spindlene) {4};
+    % Micro-Hexapod
+    \node[labelc, anchor=east] (char) at (mhexaw) {5};
+    % Sample
+    \node[labelc, anchor=north west] (char) at (samplenw) {6};
+
+    % % Measurement
+    % \draw[dashed, color=black!50] (measposbot) -- ++(1,0) coordinate (measposbotend);
+    % \draw[dashed, color=black!50] (measpostop) -- (measpostop-|measposbotend) coordinate (measpostopend);
+    % \draw[<->, dashed] ($(measposbotend)+(-0.3, 0)$) -- node[midway, right](d){$d$} ($(measpostopend)+(-0.3, 0)$);
+
+    % % Control
+    % \draw[<->] (nassfbot) -- node[midway, right](F){$F$} (nassftop);
+    % \def\blockw{1.2cm}
+    % \def\blockh{1.0cm}
+    % \node[draw, fill=white, block, right=0.6 of F] (K){$K$};
+    % \draw[->] (d.east) -- ++(0.2, 0) |- (K.east);
+    % \draw[->] (K.west) -- (F.east);
+
+    % \coordinate[] (labelx) at (-0.52*\blockw, 0);
+    % \coordinate[] (labelb) at (-0.28*\blockw, 0);
+
+    % % Curly braces
+    % \draw [decorate,decoration={brace,amplitude=5pt}] (tyb-|labelx) -- coordinate[midway](labelty) (tyt-|labelx);
+    % \draw [decorate,decoration={brace,amplitude=5pt}] ($(uhexabot-|labelb)+(0,0.05)$) -- coordinate[midway](labeluhexa) ($(uhexatop-|labelb)+(0,-0.05)$);
+    % \draw [decorate,decoration={brace,amplitude=5pt}] ($(nhexabot-|labelb)+(0,0.05)$) -- coordinate[midway](labelnhexa) ($(nhexatop-|labelb)+(0,-0.05)$);
+    % \draw [decorate,decoration={brace,amplitude=5pt}] ($(samplebot-|labelb)+(0,0.05)$) -- coordinate[midway](labelsample) ($(samplenw-|labelb)+(0,-0.05)$);
+
+    % Labels
+    % \node[left,xshift=-0.2cm] at (labeluhexa) {Hexapod};
+    % \node[left,xshift=-0.2cm] at (labelnhexa) {NASS};
+    % \node[left,xshift=-0.2cm] at (labelsample) {Sample};
+    % \node[left,xshift=-0.2cm, align=right] at (labelty) {Translation\\Stage};
+    % \draw[<-] ($0.5*(tiltte)+0.5*(beginarc)$) coordinate(arrowtilt) -- (arrowtilt-|labelty) node[left,xshift=-0.3cm] {Tilt Stage};
+    % \draw[<-] ($(spindlesw)+(0.5, 0.4)$) -- ++(-0.8, 0.5) coordinate(arrowspindle) -- (arrowspindle-|labelty) node[left,xshift=-0.3cm] {Spindle};
+  \end{tikzpicture}
+#+end_src
+
+#+name: fig:schematic_sys_without_nass
+#+caption: Schematic representation of the ID31 end station ([[./figs/schematic_sys_without_nass.png][png]], [[./figs/schematic_sys_without_nass.pdf][pdf]], [[./figs/schematic_sys_without_nass.tex][tex]]).
+#+RESULTS:
+[[file:figs/schematic_sys_without_nass.png]]
+
+* Fig 2: CAD View of the ID31 end station
+#+begin_src latex :file assemblage.pdf :tangle figs/assemblage.tex :exports both
+  \graphicspath{{~/Cloud/thesis/latex/img/}}
+  \begin{tikzpicture}
+    \tikzstyle{legend}=[draw, text width=4.2cm, align=center]
+
+    \node[inner sep=0pt, anchor=south west] (assemblage) at (0,0)
+    {\includegraphics[width=0.42\textwidth]{/home/thomas/Cloud/thesis/papers/dehaeze18_sampl_stabil_for_tomog_exper/tikz/img/assemblage_img.png}};
+
+    \coordinate[] (aheight) at (assemblage.north west);
+    \coordinate[] (awidth)  at (assemblage.south east);
+
+    \coordinate[] (xrightlabel) at (-0.2, 0);
+    \coordinate[] (xleftlabel)  at ($(awidth)+(0.2, 0)$);
+
+    % Translation Stage
+    \coordinate[] (ty) at ($0.5*(aheight)+0.1*(awidth)$);
+    \draw[<-] (ty) -- (ty-|xrightlabel) node[left, legend]{Translation Stage\\$\SI{-5}{m\metre} < T_y < \SI{5}{m\metre}$};
+
+    % Sample Interface
+    \coordinate[] (sampleint) at ($0.77*(aheight)+0.5*(awidth)$);
+    \coordinate[] (sampleintmid) at ($(sampleint)+(-1, -0.5)$);
+    \draw[<-] (sampleint) -- (sampleintmid) -- (sampleintmid-|xrightlabel) node[left, legend]{Sample Interface};
+
+    % Sample
+    \coordinate[] (sample) at ($0.9*(aheight)+0.5*(awidth)$);
+    \draw[<-] (sample) -- (sample-|xrightlabel) node[left, legend]{Sample Environment\\$\SI{1}{\kg} < M < \SI{50}{\kg}$};
+
+    % Tilt Stage
+    \coordinate[] (tilt) at ($0.55*(aheight)+0.78*(awidth)$);
+    \coordinate[] (tiltmid) at ($(tilt)+(1, 0.5)$);
+    \draw[<-] (tilt) -- (tiltmid) -- (tiltmid-|xleftlabel) node[right, legend]{Tilt Stage\\$\ang{-3} < \theta_y < \ang{3}$};
+
+    % Spindle
+    \coordinate[] (spindle) at ($0.53*(aheight)+0.33*(awidth)$);
+    \coordinate[] (spindlemid) at ($(spindle)+(-1, -1.5)$);
+    \draw[<-] (spindle) -- (spindlemid) -- (spindlemid-|xrightlabel) node[left, legend]{Spindle\\$\SI{1}{rpm} < \dot{\theta_z} < \SI{60}{rpm}$};
+
+    % Center of gravity compensation
+    \coordinate[] (axisc) at ($0.65*(aheight)+0.65*(awidth)$);
+    \coordinate[] (axiscmid) at ($(axisc)+(1, 1.5)$);
+    \draw[<-] (axisc) -- (axiscmid) -- (axiscmid-|xleftlabel) node[right, legend]{Center of gravity\\compensation system};
+
+    % Micro Hexapod
+    \coordinate[] (hexapod) at ($0.52*(aheight)+0.6*(awidth)$);
+    \coordinate[] (hexapodmid) at ($(hexapod)+(1, -1.0)$);
+    \draw[<-] (hexapod) -- (hexapodmid) -- (hexapodmid-|xleftlabel) node[right, legend]{Long Stroke Hexapod\\$\SI{-10}{m\metre} < T_{x y z} < \SI{10}{m\metre}$\\$\ang{-3} < \theta_{x y z} < \ang{3}$};
+
+    % Frame
+    \coordinate[] (frame) at ($0.14*(aheight)+0.65*(awidth)$);
+    \draw[<-] (frame) -- (frame-|xleftlabel) node[right, legend]{Frame fixed\\on the granite};
+
+    % X-Ray
+    \draw[color=red, ->-=0.7] ($0.92*(aheight)+0.8*(awidth)$) -- node[above, color=black]{X-ray} ++(190:1.8);
+
+    % Size of the setup
+    \draw[dashed, <->, color=black!70, line width=0.5pt] ($0.03*(aheight)+0.35*(awidth)$) -- node[below, color=black, pos=0.6]{$\approx\SI{1}{m}$} ($0.14*(aheight)+0.98*(awidth)$);
+    \draw[dashed, <->, color=black!70, line width=0.5pt] ($0.032*(aheight)+0.32*(awidth)$) -- node[left, color=black, pos=0.4]{$\approx\SI{1}{m}$} ($0.305*(aheight)+0.0*(awidth)$);
+
+    % Axis
+    \begin{scope}[shift={(0.0, 0.7)}]
+      \draw[->] (0, 0) -- ++(195:0.8) node[above] {$x$};
+      \draw[->] (0, 0) -- ++(90:0.9) node[right] {$z$};
+      \draw[->] (0, 0) -- ++(-40:0.7) node[above] {$y$};
+    \end{scope}
+
+  \end{tikzpicture}
+#+end_src
+
+#+name: fig:assemblage
+#+caption: CAD View of the ID31 end station ([[./figs/assemblage.png][png]], [[./figs/assemblage.pdf][pdf]], [[./figs/assemblage.tex][tex]]).
+#+RESULTS:
+[[file:figs/assemblage.png]]
+
+* Fig 3: Picture of the ID31 end station
+#+begin_src latex :file exp_setup.pdf :tangle figs/exp_setup.tex :exports both
+  \begin{tikzpicture}
+    \node[inner sep=0pt, anchor=south west] (photo) at (0,0)
+    {\includegraphics[width=0.39\textwidth]{/home/thomas/Cloud/thesis/papers/dehaeze18_sampl_stabil_for_tomog_exper/tikz/img/exp_setup_photo.png}};
+
+    \coordinate[] (aheight) at (photo.north west);
+    \coordinate[] (awidth)  at (photo.south east);
+
+    \coordinate[] (granite) at ($0.1*(aheight)+0.1*(awidth)$);
+    \coordinate[] (trans)   at ($0.5*(aheight)+0.4*(awidth)$);
+    \coordinate[] (tilt)    at ($0.65*(aheight)+0.75*(awidth)$);
+    \coordinate[] (hexapod) at ($0.7*(aheight)+0.5*(awidth)$);
+    \coordinate[] (sample)  at ($0.9*(aheight)+0.55*(awidth)$);
+
+    % Granite
+    \node[labelc] at (granite) {1};
+    % Translation stage
+    \node[labelc] at (trans) {2};
+    % Tilt Stage
+    \node[labelc] at (tilt) {3};
+    % Micro-Hexapod
+    \node[labelc] at (hexapod) {4};
+    % Sample
+    \node[labelc] at (sample) {5};
+
+    % Axis
+    \begin{scope}[shift={($0.07*(aheight)+0.87*(awidth)$)}]
+      \draw[->] (0, 0) -- ++(55:0.7) node[above] {$y$};
+      \draw[->] (0, 0) -- ++(90:0.9) node[left] {$z$};
+      \draw[->] (0, 0) -- ++(-20:0.7) node[above] {$x$};
+    \end{scope}
+  \end{tikzpicture}
+#+end_src
+
+#+name: fig:exp_setup
+#+caption: Picture of the ID31 end station ([[./figs/exp_setup.png][png]], [[./figs/exp_setup.pdf][pdf]], [[./figs/exp_setup.tex][tex]]).
+#+RESULTS:
+[[file:figs/exp_setup.png]]
+
+* Fig 4: Schematic representation of the NASS added below the sample and the control architecture used
+#+begin_src latex :file system_control.pdf :tangle figs/system_control.tex :exports results
+  \begin{tikzpicture}
+    % Parameters
+    \def\blockw{6.0cm}
+    \def\blockh{1.2cm}
+
+    % Translation Stage
+    \begin{scope}
+      % Translation Stage - fixed part
+      \draw[fill=black!40] (-0.5*\blockw, 0) coordinate[](tyb) rectangle (0.5*\blockw, 0.15*\blockh);
+      \coordinate[] (measposbot) at (0.5*\blockw, 0);
+
+      % Tilt
+      \path[] ([shift=(-120:4*\blockh)]0, 4.9*\blockh) coordinate(beginarc) arc (-120:-110:4*\blockh) %
+      -- ([shift=(-70:4*\blockh)]0, 4.9*\blockh) arc (-70:-60:4*\blockh)%
+      |- ++(-0.15*\blockw, 0.6*\blockh) coordinate (spindlene)%
+      |- ($(beginarc) + (0.15*\blockw, 0.2*\blockh)$) coordinate (spindlesw) -- ++(0, 0.4*\blockh) coordinate(tiltte) -| cycle;
+
+      % Spindle
+      \coordinate[] (spindlese) at (spindlesw-|spindlene);
+      \draw[fill=black!30] ($(spindlese)+(-0.1,0.1)+(-0.1*\blockw, 0)$) -| ($(spindlene)+(-0.1, 0)$) -| coordinate[pos=0.25](spindletop) ($(spindlesw)+(0.1,0.1)$) -| ++(0.1*\blockw, -\blockh) -| coordinate[pos=0.25](spindlebot) cycle;
+
+      \draw[dashed, color=black!60] ($(spindletop)+(0, 0.2)$) -- ($(spindlebot)+(0,-0.2)$);
+
+
+      % Tilt
+      \draw[fill=black!60] ([shift=(-120:4*\blockh)]0, 4.9*\blockh) coordinate(beginarc) arc (-120:-110:4*\blockh) %
+      -- ([shift=(-70:4*\blockh)]0, 4.9*\blockh) arc (-70:-60:4*\blockh)%
+      |- ++(-0.15*\blockw, 0.6*\blockh) coordinate (spindlene)%
+      |- ($(beginarc) + (0.15*\blockw, 0.2*\blockh)$) coordinate (spindlesw) -- ++(0, 0.4*\blockh) -| cycle;
+
+      % Translation Stage - mobile part
+      \draw[fill=black!10, fill opacity=0.5] (-0.5*\blockw, 0.2*\blockh) -- (-0.5*\blockw, 1.5*\blockh) coordinate[](tyt) -- (0.5*\blockw, 1.5*\blockh) -- (0.5*\blockw, 0.2*\blockh) -- (0.35*\blockw, 0.2*\blockh) -- (0.35*\blockw, 0.8*\blockh) -- (-0.35*\blockw, 0.8*\blockh) -- (-0.35*\blockw, 0.2*\blockh) -- cycle;
+
+      % Translation Guidance
+      \draw[dashed, color=black!60] ($(-0.5*\blockw, 0)+( 0.075*\blockw,0.5*\blockh)$) circle (0.2*\blockh);
+      \draw[dashed, color=black!60] ($( 0.5*\blockw, 0)+(-0.075*\blockw,0.5*\blockh)$) circle (0.2*\blockh);
+
+      % Tilt Guidance
+      \draw[dashed, color=black!60] ([shift=(-110:4*\blockh)]0, 4.8*\blockh) arc (-110:-120:4*\blockh);
+      \draw[dashed, color=black!60] ([shift=( -70:4*\blockh)]0, 4.8*\blockh) arc (-70:-60:4*\blockh);
+    \end{scope}
+
+    % Micro-Hexapod
+    \begin{scope}[shift={(spindletop)}]
+      % Parameters definitions
+      \def\baseh{0.2*\blockh} % Height of the base
+      \def\naceh{0.2*\blockh} % Height of the nacelle
+      \def\baser{0.22*\blockw} % Radius of the base
+      \def\nacer{0.18*\blockw} % Radius of the nacelle
+
+      \def\armr{0.2*\blockh} % Radius of the arms
+      \def\basearmborder{0.2}
+      \def\nacearmborder{0.2}
+
+      \def\xnace{0} \def\ynace{\blockh-\naceh} \def\anace{0}
+      \def\xbase{0} \def\ybase{0} \def\abase{0}
+
+      % Hexapod1
+      \begin{scope}[shift={(\xbase, \ybase)}, rotate=\abase]
+        % Base
+        \draw[fill=white] (-\baser, 0) coordinate[](uhexabot) rectangle (\baser, \baseh);
+
+        \coordinate[] (armbasel) at (-\baser+\basearmborder+\armr, \baseh);
+        \coordinate[] (armbasec) at (0, \baseh);
+        \coordinate[] (armbaser) at (\baser-\basearmborder-\armr, \baseh);
+
+        % Nacelle1
+        \begin{scope}[shift={(\xnace, \ynace)}, rotate=\anace]
+          \draw[fill=white] (-\nacer, 0) rectangle (\nacer, \naceh);
+          \coordinate[] (uhexatop) at (0, \naceh);
+          \coordinate[] (armnacel) at (-\nacer+\nacearmborder+\armr, 0);
+          \coordinate[] (armnacec) at (0, 0);
+          \coordinate[] (armnacer) at (\nacer-\nacearmborder-\armr, 0);
+        \end{scope}
+        % Nacelle1 END
+
+        \draw[] (armbasec) -- (armnacer);
+        \draw[] (armbasec) -- (armnacel);
+        \draw[] (armbasel) -- (armnacel);
+        \draw[] (armbasel) -- (armnacec);
+        \draw[] (armbaser) -- (armnacec);
+        \draw[] (armbaser) -- (armnacer);
+      \end{scope}
+    \end{scope}
+
+    % NASS
+    \begin{scope}[shift={(uhexatop)}]
+      % Parameters definitions
+      \def\baseh{0.1*\blockh} % Height of the base
+      \def\naceh{0.1*\blockh} % Height of the nacelle
+      \def\baser{0.16*\blockw} % Radius of the base
+      \def\nacer{0.14*\blockw} % Radius of the nacelle
+
+      \def\armr{0.1*\blockh} % Radius of the arms
+      \def\basearmborder{0.2}
+      \def\nacearmborder{0.2}
+
+      \def\xnace{0} \def\ynace{0.6*\blockh-\naceh} \def\anace{0}
+      \def\xbase{0} \def\ybase{0} \def\abase{0}
+
+      % Hexapod1
+      \begin{scope}[shift={(\xbase, \ybase)}, rotate=\abase]
+        % Base
+        \draw[fill=red!50!black] (-\baser, 0) coordinate[](nhexabot) rectangle (\baser, \baseh);
+
+        \coordinate[] (armbasel) at (-\baser+\basearmborder+\armr, \baseh);
+        \coordinate[] (armbasec) at (0, \baseh);
+        \coordinate[] (armbaser) at (\baser-\basearmborder-\armr, \baseh);
+
+        % Nacelle1
+        \begin{scope}[shift={(\xnace, \ynace)}, rotate=\anace]
+          \draw[fill=red!50!black] (-\nacer, 0) rectangle (\nacer, \naceh);
+          \coordinate[] (nhexatop) at (0, \naceh);
+          \coordinate[] (armnacel) at (-\nacer+\nacearmborder+\armr, 0);
+          \coordinate[] (armnacec) at (0, 0);
+          \coordinate[] (armnacer) at (\nacer-\nacearmborder-\armr, 0);
+          \coordinate[] (measpostop) at (\nacer, \naceh);
+        \end{scope}
+        % Nacelle1 END
+
+        \draw[color=red!50!black] (armbasec) -- (armnacer);
+        \draw[color=red!50!black] (armbasec) -- (armnacel);
+        \draw[color=red!50!black] (armbasel) -- (armnacel);
+        \draw[color=red!50!black] (armbasel) -- (armnacec);
+        \draw[color=red!50!black] (armbaser) -- (armnacec);
+        \draw[color=red!50!black] (armbaser) -- (armnacer);
+
+        % Force actuator
+        \coordinate[] (nassfbot) at (0.8*\baser, \baseh);
+        \coordinate[] (nassftop) at (armnacec-|nassfbot);
+      \end{scope}
+    \end{scope}
+
+    % Sample
+    \begin{scope}[shift={(nhexatop)}]
+      \draw[fill=white] (-0.1*\blockw, 0) coordinate[](samplebot) rectangle coordinate[pos=0.5](samplecenter) (0.1*\blockw, \blockh) coordinate[](sampletop);
+    \end{scope}
+
+    % Laser
+    \begin{scope}[shift={(samplecenter)}]
+      \draw[color=red, -<-=0.5] (samplecenter) node[circle, fill=red, inner sep=0pt, minimum size=3pt]{} -- node[midway, above, color=black]{X-ray} ($(samplecenter)+(0.5*\blockw,0)$);
+    \end{scope}
+
+    %% Measurement
+    \draw[dashed, color=black!50] (measposbot) -- ++(0.8,0) coordinate (measposbotend);
+    \draw[dashed, color=black!50] (measpostop) -- (measpostop-|measposbotend) coordinate (measpostopend);
+    \draw[<->, dashed] ($(measposbotend)+(-0.2, 0)$) -- node[midway, left](d){$d$} ($(measpostopend)+(-0.2, 0)$);
+
+    %% Control
+    \draw[<->, line width=0.5pt] (nassfbot) -- node[midway, right](F){$F$} (nassftop);
+    \node[draw, block={2.3em}{1.7em}, right=0.3 of F] (K){$K$};
+    \draw[->] (d.west) -| ($(K.east)+(0.5, 0)$) -- (K.east);
+    \draw[->] (K.west) -- (F.east);
+  \end{tikzpicture}
+#+end_src
+
+#+name: fig:system_control
+#+caption: Schematic representation of the NASS added below the sample and the control architecture used ([[./figs/system_control.png][png]], [[./figs/system_control.pdf][pdf]], [[./figs/system_control.tex][tex]]).
+#+RESULTS:
+[[file:figs/system_control.png]]
+
+* Fig 5: Transfer function from a force applied by the NASS to the displacement of the sample
+#+name: fig:G_x_mass
+#+caption: Transfer function from a force applied by the NASS to the displacement of the sample ([[./figs/G_x_mass.png][png]], [[./figs/G_x_mass.pdf][pdf]]).
+#+RESULTS:
+[[file:figs/G_x_mass.png]]
+
+* Fig 6: General control configuration applied to the end station
+#+begin_src latex :file general_conf_K.pdf :tangle figs/general_conf_K.tex :exports both
+  \begin{tikzpicture}
+    % Blocs
+    \node[block={2.5cm}{2cm}] (P) {P};
+    \node[block={2.5cm}{2cm}, below=1 of P, scale=0.6] (K) {\[%
+        \begin{pmatrix}
+          K_{T_x} & 0      & \cdots & 0            \\
+          0       & \ddots & \ddots & \vdots       \\
+          \vdots  & \ddots & \ddots & 0            \\
+          0       & \cdots & 0      & K_{\theta_z} \\
+        \end{pmatrix}
+      \]};
+
+    % Block names
+    \node[above] at (P.north) {End Station};
+    \node[above] at (K.north) {Controller};
+
+    % Input and outputs coordinates
+    \coordinate[] (inputw)  at ($(P.south west)!0.75!(P.north west)$);
+    \coordinate[] (inputu)  at ($(P.south west)!0.25!(P.north west)$);
+    \coordinate[] (outputz) at ($(P.south east)!0.75!(P.north east)$);
+    \coordinate[] (outputv) at ($(P.south east)!0.25!(P.north east)$);
+
+    % Connections and labels
+    \draw[<-] (inputw) node[above left]{$w$} -- ++(-0.8, 0);
+    \draw[<-] (inputu) node[above left]{$F$} -- ++(-0.8, 0) |- (K.west);
+
+    \draw[->] (outputz) node[above right]{$z$} -- ++(0.8, 0);
+    \draw[->] (outputv) node[above right]{$d$} -- ++(0.8, 0) |- (K.east);
+  \end{tikzpicture}
+#+end_src
+
+#+name: fig:general_conf_K
+#+caption: General control configuration applied to the end station ([[./figs/general_conf_K.png][png]], [[./figs/general_conf_K.pdf][pdf]], [[./figs/general_conf_K.tex][tex]]).
+#+RESULTS:
+[[file:figs/general_conf_K.png]]
+
+* Fig 7: Bode plot of the loop gain for the control in the x direction
+#+begin_src latex :file loopgain.pdf :tangle figs/loopgain.tex :exports results
+\setlength\fwidth{6cm}
+\setlength\fheight{4cm}
+
+\definecolor{mycolor1}{rgb}{0.00000,0.44700,0.74100}%
+
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=\fwidth,
+height=0.468\fheight,
+at={(0\fwidth,0\fheight)},
+scale only axis,
+xmode=log,
+xmin=0.001,
+xmax=1000,
+xminorticks=true,
+xlabel={Frequency [Hz]},
+ymin=-180,
+ymax=0,
+ytick={-180,  -90,    0},
+ylabel={Phase [deg]},
+xminorgrids
+]
+\addplot [color=mycolor1, line width=1.5pt, forget plot]
+  table[row sep=crcr]{%
+0.001	-86.9230400300902\\
+0.00113254131515284	-86.5161615171006\\
+0.00128264983052803	-86.0557813841993\\
+0.00145265392594678	-85.5350002408076\\
+0.00164519058775369	-84.9460899281546\\
+0.00186324631193151	-84.2804214998321\\
+0.00211020342856859	-83.5283999677203\\
+0.00238989256623109	-82.6794134157273\\
+0.00270665207003317	-81.7218075729806\\
+0.00306539529505651	-80.6429015759928\\
+0.00347168681892662	-79.4290665745648\\
+0.00393182875570566	-78.065895985946\\
+0.00445295850994262	-76.538504078701\\
+0.00504315948717143	-74.8319968731543\\
+0.00571158647812626	-72.9321634787283\\
+0.00655868565957134	-70.5792954692951\\
+0.00753142016597439	-67.9593596120116\\
+0.00864842327573189	-65.0664370245527\\
+0.0100693863147606	-61.5741194134637\\
+0.0118870769771187	-57.421656103812\\
+0.0146273335620117	-51.8219472331176\\
+0.020956623994805	-41.5941699296152\\
+0.0272543253128104	-34.3147123276736\\
+0.0330764978074424	-29.3522854368237\\
+0.0390473523688559	-25.4714274931074\\
+0.0454629546953248	-22.2505877719071\\
+0.0522056752784682	-19.6091054797758\\
+0.0599484250318932	-17.2353430360798\\
+0.0688395206964551	-15.1167931083143\\
+0.0790492762269657	-13.2363433974286\\
+0.0895265712599616	-11.7313485137543\\
+0.101392540755881	-10.3884198836668\\
+0.114831241454353	-9.19270190007785\\
+0.130051125217337	-8.129867210165\\
+0.147288272390749	-7.18639582677577\\
+0.166810053720008	-6.34973164966198\\
+0.188919277620761	-5.60835214561624\\
+0.21395888713434	-4.95177917643261\\
+0.242317279423763	-4.37055207200137\\
+0.274434330322828	-3.85617846234896\\
+0.310808217386903	-3.40107416303749\\
+0.352003147279672	-2.99850045087254\\
+0.398658107358031	-2.64250524757711\\
+0.451496777203605	-2.32787399109969\\
+0.511338753841437	-2.05009640659685\\
+0.579112264764194	-1.80535734119462\\
+0.655868565957134	-1.59056413001801\\
+0.742798248256497	-1.40343141244551\\
+0.829695852083464	-1.25923533113843\\
+0.926759330114683	-1.13580182223197\\
+1.02096066230607	-1.04567008665731\\
+1.10928986489522	-0.983076466909012\\
+1.18870769771187	-0.942748031361987\\
+1.25631660247414	-0.919492395190701\\
+1.32777082935543	-0.905645505513149\\
+1.38401609657311	-0.902495748073335\\
+1.44264395121811	-0.906637885889353\\
+1.50375532129977	-0.919350533688032\\
+1.5674554102056	-0.942283818027818\\
+1.63385387780984	-0.977590942238891\\
+1.7030650292528	-1.02811983230166\\
+1.77520801171768	-1.09769941794892\\
+1.85040701954232	-1.19157983197587\\
+1.92879150802077	-1.31713239076257\\
+2.01049641626046	-1.48500742420691\\
+2.0956623994805	-1.71114152687935\\
+2.18443607114946	-2.02044130104792\\
+2.27697025538168	-2.45403813004899\\
+2.37342425002384	-3.08492033944978\\
+2.47396410088675	-4.05587348265055\\
+2.54334576130472	-5.03584114101898\\
+2.61467321180114	-6.49907553279095\\
+2.68800102153763	-8.88214292906235\\
+2.76338529005317	-13.354064152394\\
+2.80186655645918	-17.3986658770742\\
+2.84088369018327	-24.2751390526001\\
+2.88044415339625	-37.781789043342\\
+3.04427221206439	-153.089412264589\\
+3.12964801067081	-163.361838014791\\
+3.2174181506764	-167.646995232098\\
+3.30764978074424	-169.946059814047\\
+3.40041193270367	-171.357679809003\\
+3.54445567397035	-172.655016160482\\
+3.6946012051994	-173.436137635495\\
+3.85110700232562	-173.933812817475\\
+4.01424249049931	-174.257393246655\\
+4.18428850790151	-174.4646688106\\
+4.36153778920815	-174.588695605604\\
+4.48385594802129	-174.635301329573\\
+4.60960448682849	-174.657754988001\\
+4.6737951079925	-174.660827208184\\
+4.73887960971767	-174.658832887219\\
+4.8717802187946	-174.640476674262\\
+5.00840798984813	-174.603950791937\\
+5.22056752784682	-174.516428210249\\
+5.441714286866	-174.389392765672\\
+5.67222897164457	-174.219814333695\\
+5.91250841383182	-174.000798395784\\
+6.16296625513279	-173.719605189933\\
+6.42403365939436	-173.353437736057\\
+6.6961600548533	-172.8600623009\\
+6.97981390783064	-172.154567905915\\
+7.17556091893683	-171.479151685091\\
+7.37679760252756	-170.505033346522\\
+7.58367791499744	-168.953501864271\\
+7.79636013040541	-166.039227129299\\
+7.90492762269657	-163.326399484374\\
+8.01500696156551	-158.425074974019\\
+8.12661920009201	-147.163534154026\\
+8.23978568452855	-108.490722009947\\
+8.35452805838285	-39.2987527386226\\
+8.47086826655735	-16.8673944739431\\
+8.70843149769058	-5.34729407739999\\
+8.95265712599616	-1.65005171340454\\
+9.20373199661849	0.152175631815396\\
+9.59360828709328	1.68981529224504\\
+10	2.57693032874369\\
+10.4236067397639	3.15733209351166\\
+10.8651577465251	3.56217310328162\\
+11.3254131515284	3.84724990024554\\
+11.8051652856881	4.03703864714163\\
+12.1362379834424	4.11495115930705\\
+12.4765955263085	4.15359855581249\\
+12.6503372039588	4.15747732307207\\
+12.8264983052803	4.15043280598672\\
+13.0051125217337	4.13183659520382\\
+13.3698374182498	4.05678039326017\\
+13.7447909267756	3.92430359475409\\
+14.1302599059955	3.72339859325277\\
+14.5265392594678	3.43912195016375\\
+15.1418932530433	2.80995290344029\\
+15.7833140565207	1.84144930317055\\
+16.4519058775369	0.357600406773344\\
+17.1488196987055	-1.95805932965996\\
+17.629753752872	-4.24769467342912\\
+18.1241754737421	-7.49879374268141\\
+18.6324631193151	-12.2895185907882\\
+19.1550055557359	-19.6586546321866\\
+19.6922025547921	-31.4767017779205\\
+20.2444650997683	-50.3815406826951\\
+21.6938351838516	-108.829423515067\\
+22.3022329796589	-121.551731912588\\
+22.9276931286572	-129.314261975131\\
+23.5706941399678	-134.162367162735\\
+24.2317279423763	-137.232072144463\\
+24.911300260678	-139.111199098336\\
+25.6099310025844	-140.072854680469\\
+25.9665597293484	-140.231509177618\\
+26.3281546564798	-140.155965300896\\
+26.6947849403426	-139.803432624913\\
+27.0665207003317	-139.093236181157\\
+27.4434330322828	-137.878977744969\\
+27.8255940220721	-135.89172273756\\
+28.2130767593954	-132.623017321418\\
+28.605955351758	-127.107024286851\\
+29.8177229001969	-94.9300384636171\\
+30.2329468440578	-103.828100398765\\
+31.0808217386903	-135.723061113021\\
+31.9524750575915	-144.530826342356\\
+32.8485736602995	-146.764803761063\\
+33.7698031082518	-147.383975143133\\
+34.240061379715	-147.464959137832\\
+34.7168681892662	-147.465768456844\\
+35.2003147279672	-147.412812105583\\
+36.1874981241128	-147.204400166182\\
+37.7204249341695	-146.744853741172\\
+40.4209583979642	-145.784576097822\\
+45.1496777203605	-144.012151723289\\
+69.3171727615563	-136.903840188638\\
+76.3629826128223	-135.635375465298\\
+81.8300681586717	-134.889641861299\\
+87.6885609458755	-134.304824213283\\
+92.6759330114683	-133.962419777004\\
+96.6017479952245	-133.776557449691\\
+102.096066230607	-133.602011570544\\
+110.928986489522	-133.37236734447\\
+115.628013120735	-133.182903594213\\
+120.526093687088	-132.884672766565\\
+125.631660247414	-132.453724169695\\
+132.777082935543	-131.692904291565\\
+156.74554102056	-129.240997662534\\
+165.660595894989	-128.680395334725\\
+175.082703173578	-128.277734622978\\
+185.040701954232	-127.945081262175\\
+187.617469143913	-127.820094314385\\
+190.230118866895	-127.573368660463\\
+195.565071586593	-125.952899216536\\
+198.288394912704	-127.086793358268\\
+201.049641626046	-127.12566028822\\
+203.849339825241	-126.802951397854\\
+206.688024962902	-126.078681186513\\
+209.56623994805	-124.471962454244\\
+212.484535249894	-120.238438418219\\
+218.443607114946	-90.7600450671552\\
+224.569799553979	-122.445868680239\\
+227.697025538168	-125.738988609759\\
+234.082727617828	-127.907664531251\\
+240.647515001538	-128.721847293873\\
+250.841505927762	-129.407668937987\\
+268.800102153763	-130.224611859747\\
+288.044415339625	-130.869017615199\\
+300.246170908546	-131.125027941194\\
+312.964801067081	-131.267297460602\\
+317.322963473503	-131.317798256336\\
+321.74181506764	-131.398779497843\\
+326.222200971169	-131.536370879424\\
+335.371015200291	-132.072009002596\\
+349.577557436321	-133.495123305872\\
+379.82153061908	-136.503731402986\\
+412.68208457029	-138.883629456353\\
+651.349094627294	-151.296712222682\\
+758.367791499744	-155.305634720384\\
+933.189771573347	-160.939627474856\\
+1000	-163.089713371593\\
+};
+\draw[<->] (200, -180) -- node[left]{$\Delta\phi$} (200, -127);
+\end{axis}
+
+\begin{axis}[%
+  width=\fwidth,
+  height=0.468\fheight,
+  at={(0\fwidth,0.53\fheight)},
+  scale only axis,
+  xmode=log,
+  xmin=0.001,
+  xmax=1000,
+  xtick={0.001,0.01,0.1,1,10,100,1000},
+  xticklabels={{}},
+  xminorticks=true,
+  ymode=log,
+  ymin=0.1,
+  ymax=10000,
+  ytick={1, 100, 10000},
+  yticklabels={{$10^0$}, {$10^2$}, {$10^4$}},
+  yminorticks=true,
+  ylabel={Amplitude},
+  xminorgrids,
+  yminorgrids
+]
+\addplot [color=mycolor1, line width=1.5pt, forget plot]
+  table[row sep=crcr]{%
+0.001	4422.92805227793\\
+0.00328485736603004	1365.31862071646\\
+0.00540421642070592	851.028353579162\\
+0.00753142016597438	632.653237306165\\
+0.0097946966706954	509.595911658568\\
+0.0122204468663149	432.413356356167\\
+0.0150375532129974	377.661157222189\\
+0.0182499324481615	339.019826082366\\
+0.0218443607114943	311.846377672925\\
+0.0261467321180109	291.384120920123\\
+0.0317322963473498	275.223592402322\\
+0.0390473523688556	263.013082563784\\
+0.0493962174387832	253.746973448817\\
+0.065134909462728	247.006069407616\\
+0.0933189771573324	242.294146668305\\
+0.153527502878042	239.72600231592\\
+0.294082017058706	240.030635865746\\
+0.483820966492596	243.498710820624\\
+0.674262224177834	249.295070811676\\
+0.852964449974102	256.991790045004\\
+1.02096066230605	266.579744717582\\
+1.1887076977119	278.947958161191\\
+1.34626057929891	293.779246196022\\
+1.50375532129974	312.661093047946\\
+1.65660595894991	336.185831446107\\
+1.79992850678248	364.669087749645\\
+1.92879150802078	397.755267940252\\
+2.06688024962908	444.686960935947\\
+2.18443607114943	498.687405697471\\
+2.30867799418717	578.140511304515\\
+2.43998629725955	705.49461262437\\
+2.54334576130465	864.909089681418\\
+2.65108360190854	1150.06397953612\\
+2.72543253128103	1506.15645554669\\
+2.8018665564592	2228.3370936465\\
+2.8804441533963	4193.22407546881\\
+2.92055551218275	6067.22774922962\\
+2.96122543798803	5767.93091362259\\
+3.08666494333727	1919.21060989611\\
+3.21741815067637	1022.91140002102\\
+3.40041193270371	594.941650908705\\
+3.59381366380463	399.789258032443\\
+3.85110700232557	268.344597258036\\
+4.24255643071778	168.542908273869\\
+4.93962174387832	88.8944916899213\\
+5.91250841383188	41.6193619266362\\
+6.42403365939419	27.7139106670782\\
+6.8839520696455	18.3939139229947\\
+7.27548352919622	12.0540140950493\\
+7.58367791499719	7.82435961362363\\
+7.79636013040524	5.22341787877031\\
+8.0150069615654	2.80090242471201\\
+8.23978568452852	0.851222686892883\\
+8.35452805838287	1.10279073449891\\
+8.58882855954625	3.0597069105514\\
+8.82969995549409	5.10178151912975\\
+9.20373199661822	8.05539647260134\\
+9.59360828709315	10.8672597721215\\
+10.1392540755881	14.4783720901258\\
+10.8651577465254	18.8768193229402\\
+11.8051652856881	24.255174820108\\
+13.7447909267754	35.9992755224308\\
+15.3527502878042	48.989108545494\\
+16.4519058775366	61.9675236867468\\
+17.3876240021625	78.2815769152408\\
+18.3765620038817	105.759628528362\\
+19.4217468148902	157.125319034049\\
+20.2444650997681	212.311484261712\\
+20.5263775270925	223.395136619031\\
+20.8122156998634	223.31019692555\\
+21.102034285686	211.480808183564\\
+21.6938351838519	170.401012319889\\
+23.5706941399673	83.0113918816975\\
+25.2582002696278	52.3889785574963\\
+29.0043049386399	23.0579347642099\\
+29.4082017058706	24.4565997966304\\
+30.6539529505653	49.7034890482232\\
+32.8485736603005	28.6861284535607\\
+34.7168681892656	22.3457836268213\\
+37.2023668141307	17.729174858676\\
+40.9838367175726	13.6240017002393\\
+45.7784053837662	10.5334890367744\\
+52.5679112201842	7.94129019098635\\
+61.204983724767	6.02168414080117\\
+73.2596542821523	4.48575405397529\\
+92.6759330114688	3.1513822405149\\
+115.628013120738	2.24687301549495\\
+142.283045721435	1.63031165449062\\
+190.230118866895	1.07794465396548\\
+192.879150802078	1.0470765391348\\
+195.565071586595	1.05528467531233\\
+201.04964162605	0.990057161720141\\
+206.688024962908	0.906527126546888\\
+212.484535249888	0.776923494421282\\
+215.443469003188	0.720692210359804\\
+221.485523372636	1.37364107537187\\
+227.697025538168	1.14258167143738\\
+234.082727617829	1.03095880733361\\
+243.998629725955	0.937175973822169\\
+261.467321180109	0.834076758655\\
+300.246170908555	0.684629245816208\\
+321.741815067637	0.630828877951377\\
+359.381366380463	0.561557761925202\\
+407.014245321944	0.468733319273131\\
+567.222897164455	0.282413087945242\\
+707.701066118189	0.196058644388651\\
+1000	0.108243919936631\\
+};
+
+\node[color=red,cross out,draw, inner sep=0pt, outer sep=0pt, minimum size=4pt] at (0.0218, 311.84) {};
+\node[color=red,circle,draw, inner sep=0pt, outer sep=0pt, minimum size=4pt] at (73.259, 4.4857) {};
+\node[color=red,cross out,draw, inner sep=0pt, outer sep=0pt, minimum size=4pt] at (567.22,0.282) {};
+\draw [decorate,decoration={brace,amplitude=3pt}] (73, 50) -- node[above]{Lead} (567, 50);
+\draw [decorate,decoration={brace,mirror,amplitude=3pt}] (0.001, 50) -- node[below]{Integral} (0.023, 50);
+\end{axis}
+\end{tikzpicture}%
+#+end_src
+
+#+name: fig:loopgain
+#+caption: Bode plot of the loop gain for the control in the x direction ([[./figs/loopgain.png][png]], [[./figs/loopgain.pdf][pdf]], [[./figs/loopgain.tex][tex]]).
+#+RESULTS:
+[[file:figs/loopgain.png]]
+
+* Fig 8: Positioning error of the sample in the x and y direction during the simulation of a tomography experiment
+#+name: fig:exp_w_wo_nass_xy
+#+caption: Positioning error of the sample in the x and y direction during the simulation of a tomography experiment ([[./figs/exp_w_wo_nass_xy.png][png]], [[./figs/exp_w_wo_nass_xy.pdf][pdf]]).
+#+RESULTS:
+[[file:figs/exp_w_wo_nass_xy.png]]
+
+* Fig 1: Schematic of the Tomography Experiment (Poster)
+#+begin_src latex :file exp_full_setup.pdf :tangle figs/exp_full_setup.tex :exports results
+  \begin{tikzpicture}
+    % Parameters
+    \def\blockw{6.0cm}
+    \def\blockh{1.2cm}
+
+    \def\tiltdeg{3}
+    \coordinate[] (rotationpoint) at (0, 4.5*\blockh);
+
+    \begin{scope}[rotate around={\tiltdeg:(rotationpoint)}]
+      % Tilt
+      \path[] ([shift=(-120:4*\blockh)]rotationpoint) coordinate(beginarc) arc (-120:-110:4*\blockh) %
+      -- ([shift=(-70:4*\blockh)]rotationpoint) arc (-70:-60:4*\blockh)%
+      |- ++(-0.15*\blockw, 0.6*\blockh) coordinate (spindlene)%
+      |- ($(beginarc) + (0.15*\blockw, 0.2*\blockh)$) coordinate (spindlesw) -- ++(0, 0.4*\blockh) coordinate(tiltte) -| cycle;
+
+      % Spindle
+      \coordinate[] (spindlese) at (spindlesw-|spindlene);
+      \draw[fill=black!30] ($(spindlese)+(-0.1,0.1)+(-0.1*\blockw, 0)$) -| ($(spindlene)+(-0.1, 0)$) -| coordinate[pos=0.25](spindletop) ($(spindlesw)+(0.1,0.1)$) -| ++(0.1*\blockw, -\blockh) -| coordinate[pos=0.25](spindlebot) cycle;
+
+      % \draw[dashed, color=black!60] ($(spindletop)+(0, 0.2)$) -- ($(spindlebot)+(0,-0.2)$);
+
+      % Tilt
+      \draw[fill=black!60] ([shift=(-120:4*\blockh)]rotationpoint) coordinate(beginarc) arc (-120:-110:4*\blockh) %
+      -- ([shift=(-70:4*\blockh)]rotationpoint) arc (-70:-60:4*\blockh)%
+      |- coordinate (tiltne) ++(-0.15*\blockw, 0.6*\blockh) coordinate (spindlene)%
+      |- ($(beginarc) + (0.15*\blockw, 0.2*\blockh)$) coordinate (spindlesw) -- ++(0, 0.4*\blockh) -| cycle;
+
+      % Micro-Hexapod
+      \begin{scope}[shift={(spindletop)}]
+        % Parameters definitions
+        \def\baseh{0.22*\blockh} % Height of the base
+        \def\naceh{0.18*\blockh} % Height of the nacelle
+        \def\baser{0.22*\blockw} % Radius of the base
+        \def\nacer{0.18*\blockw} % Radius of the nacelle
+
+        \def\armr{0.2*\blockh} % Radius of the arms
+        \def\basearmborder{0.2}
+        \def\nacearmborder{0.2}
+
+        \def\xnace{0} \def\ynace{\blockh-\naceh} \def\anace{0}
+        \def\xbase{0} \def\ybase{0} \def\abase{0}
+
+        % Hexapod1
+        \begin{scope}[shift={(\xbase, \ybase)}, rotate=\abase]
+          % Base
+          \draw[fill=white] (-\baser, 0) coordinate[](uhexabot) rectangle (\baser, \baseh);
+
+          \coordinate[] (armbasel) at (-\baser+\basearmborder+\armr, \baseh);
+          \coordinate[] (armbasec) at (0, \baseh);
+          \coordinate[] (armbaser) at (\baser-\basearmborder-\armr, \baseh);
+
+          \begin{scope}[shift={(\xnace, \ynace)}, rotate=\anace]
+            \draw[fill=white] (-\nacer, 0) rectangle (\nacer, \naceh);
+            \coordinate[] (uhexatop) at (0, \naceh);
+            \coordinate[] (armnacel) at (-\nacer+\nacearmborder+\armr, 0);
+            \coordinate[] (armnacec) at (0, 0);
+            \coordinate[] (armnacer) at (\nacer-\nacearmborder-\armr, 0);
+          \end{scope}
+
+          \draw[] (armbasec) -- (armnacer);
+          \draw[] (armbasec) -- (armnacel);
+          \draw[] (armbasel) -- coordinate(mhexaw) (armnacel);
+          \draw[] (armbasel) -- (armnacec);
+          \draw[] (armbaser) -- (armnacec);
+          \draw[] (armbaser) -- coordinate(mhexae) (armnacer);
+        \end{scope}
+      \end{scope}
+
+      % Sample
+      \begin{scope}[shift={(uhexatop)}]
+        \draw[fill=white] (-0.1*\blockw, 0) coordinate[](samplebot) rectangle coordinate[pos=0.5](samplecenter) node[pos=0.5, above]{Sample} (0.1*\blockw, \blockh) coordinate[](samplene);
+        \coordinate[](samplenw) at (-0.1*\blockw, \blockh);
+      \end{scope}
+    \end{scope}
+
+    \begin{scope}[shift={(0, -0.3*\blockh)}]
+      % Translation Stage - fixed part
+      \draw[fill=black!40] (-0.5*\blockw, 0) coordinate[](tyb) rectangle (0.5*\blockw, 0.15*\blockh);
+      \coordinate[] (measposbot) at (0.5*\blockw, 0);
+
+      % Translation Stage - mobile part
+      \draw[fill=black!10, fill opacity=0.5] (-0.5*\blockw, 0.2*\blockh) -- (-0.5*\blockw, 1.5*\blockh) coordinate[](tyt) -- (0.5*\blockw, 1.5*\blockh) -- (0.5*\blockw, 0.2*\blockh) -- (0.35*\blockw, 0.2*\blockh) -- (0.35*\blockw, 0.8*\blockh) -- (-0.35*\blockw, 0.8*\blockh) -- (-0.35*\blockw, 0.2*\blockh) -- cycle;
+
+      % Translation Guidance
+      \draw[dashed, color=black!60] ($(-0.5*\blockw, 0)+( 0.075*\blockw,0.5*\blockh)$) circle (0.2*\blockh);
+      \draw[dashed, color=black!60] ($( 0.5*\blockw, 0)+(-0.075*\blockw,0.5*\blockh)$) circle (0.2*\blockh);
+
+      % Tilt Guidance
+      \draw[dashed, color=black!60] ([shift=(-107:4.1*\blockh)]rotationpoint) arc (-107:-120:4.1*\blockh);
+      \draw[dashed, color=black!60] ([shift=( -73:4.1*\blockh)]rotationpoint) arc (-73:-60:4.1*\blockh);
+    \end{scope}
+
+    % % Vertical line
+    % \draw[dashed, color=black] (samplecenter) -- ++(0, -4*\blockh);
+    % \begin{scope}[rotate around={\tiltdeg:(samplecenter)}]
+    %   \draw[dashed, color=black] (samplecenter) -- ++(0, -4*\blockh);
+    %   \node[] at ($(samplecenter)+(0, -2.3*\blockh)$) {\AxisRotator[rotate=-90]};
+    %   \node[right, shift={(0.3,0)}] at ($(samplecenter)+(0, -2.3*\blockh)$) {$\theta_z$};
+    % \end{scope}
+    % \draw[->] ([shift=(-90:3.6*\blockh)]samplecenter) arc (-90:-87:3.6*\blockh) node[right]{$\theta_y$};
+
+    % Laser
+    \begin{scope}[shift={(samplecenter)}]
+      \draw[color=red, -<-=0.3] (samplecenter) node[circle, fill=red, inner sep=0pt, minimum size=3pt]{} -- node[pos=0.3, above, color=black]{X-ray} ($(samplecenter)+(1.2*\blockw,0)$);
+    \end{scope}
+
+    % Axis
+    \begin{scope}[shift={(-0.35*\blockw, 3*\blockh)}]
+      \def\axissize{0.8cm}
+      \draw[->] (0, 0) -- ++(0, \axissize) node[right]{$z$};
+      \draw[->] (0, 0) -- ++(-\axissize, 0) node[above]{$x$};
+      \draw[fill, color=black] (0, 0) circle (0.05*\axissize);
+      \node[draw, circle, inner sep=0pt, minimum size=0.4*\axissize, label=right:$y$] (yaxis) at (0, 0){};
+      % \node[draw, circle, inner sep=0pt, cross, minimum size=0.4*\axissize, label=left:$y$] (yaxis) at (0, 0){};
+    \end{scope}
+
+    \node[fit={($(-0.6*\blockw, -0.5*\blockh)$) ($(0.6*\blockw, 4*\blockh)$)}, inner sep=0pt, draw, dashed, color=gray, label={Positioning Station}] (possystem) {};
+
+    \draw[fill=black!30] ($(tyb)+(-5, -1)$) coordinate[](granitesw) rectangle node[pos=0.5]{Granite Frame} ($(measposbot)+(5, 0)$) coordinate[](granitene);
+
+    % Focusing Optics
+    \draw[fill=black!20] ($(granitene)+(-1.5, 3)$) rectangle ++(-1, 2);
+    \draw[spring] ($(granitene)+(-2, 0)$) -- ++(0, 3);
+
+    \node[fit={($(granitene)+(-2.8, -0.2)$) ($(granitene)+(-1.2, 5.2)$)}, inner sep=0pt, draw, dashed, color=gray, label={Focusing Optics}] () {};
+
+    % Measurement Optics
+    \draw[fill=black!20] ($(granitesw)+(1.5, 4)$) rectangle ++(1, 2);
+    \draw[spring] ($(granitesw)+(2, 1)$) -- ++(0, 3);
+
+    \node[fit={($(granitesw)+(2.8, 0.8)$) ($(granitesw)+(1.2, 6.2)$)}, inner sep=0pt, draw, dashed, color=gray, label={Imagery System}] () {};
+  \end{tikzpicture}
+#+end_src
+
+#+name: fig:exp_full_setup
+#+caption: Schematic of the Tomography Experiment ([[./figs/exp_full_setup.png][png]], [[./figs/exp_full_setup.pdf][pdf]], [[./figs/exp_full_setup.tex][tex]]).
+#+RESULTS:
+[[file:figs/exp_full_setup.png]]
