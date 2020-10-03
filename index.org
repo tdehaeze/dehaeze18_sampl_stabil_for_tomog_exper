@@ -1,8 +1,13 @@
 #+TITLE: Sample Stabilization for Tomography Experiments in Presence of Large Plant Uncertainty
 :DRAWER:
 #+SUBTITLE: Dehaeze Thomas, Magnin-Mattenet Muriel and Collette Christophe
+
+#+HTML_LINK_HOME: ../index.html
+#+HTML_LINK_UP: ../index.html
+
 #+OPTIONS: toc:nil
 #+OPTIONS: html-postamble:nil
+
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/htmlize.css"/>
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="css/readtheorg.css"/>
 #+HTML_HEAD: <script src="js/jquery.min.js"></script>
